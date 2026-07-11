@@ -1,1 +1,182 @@
-<p>hello world</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Northstar HR — Workforce Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark">N</span>
+      <span class="brand-name">Northstar<em>HR</em></span>
+    </div>
+    <nav class="nav">
+      <button class="nav-item active" data-view="dashboard">
+        <svg viewBox="0 0 24 24"><path d="M4 13h6V4H4v9zm0 7h6v-5H4v5zm10 0h6V11h-6v9zm0-16v5h6V4h-6z"/></svg>
+        Dashboard
+      </button>
+      <button class="nav-item" data-view="employees">
+        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+        Employees
+      </button>
+      <button class="nav-item" data-view="attendance">
+        <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm.5 5v5.25l4.5 2.67-.75 1.23L11 13V7h1.5z"/></svg>
+        Attendance
+      </button>
+      <button class="nav-item" data-view="leave">
+        <svg viewBox="0 0 24 24"><path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V9h14v11zM7 11h5v5H7z"/></svg>
+        Leave
+      </button>
+    </nav>
+    <div class="sidebar-foot">
+      <div class="pulse-title">Department pulse</div>
+      <div id="deptPulse" class="dept-pulse"></div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="view active" id="view-dashboard">
+      <header class="view-head">
+        <div>
+          <h1>Good to see you.</h1>
+          <p class="sub">Here's how the workforce looks today, <span id="todayLabel"></span>.</p>
+        </div>
+      </header>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-label">Headcount</span>
+          <span class="stat-value" id="statHeadcount">0</span>
+          <span class="stat-foot">across all departments</span>
+        </div>
+        <div class="stat-card accent-teal">
+          <span class="stat-label">Present today</span>
+          <span class="stat-value" id="statPresent">0</span>
+          <span class="stat-foot" id="statPresentPct">— of headcount</span>
+        </div>
+        <div class="stat-card accent-amber">
+          <span class="stat-label">Pending leave requests</span>
+          <span class="stat-value" id="statPendingLeave">0</span>
+          <span class="stat-foot">awaiting your decision</span>
+        </div>
+        <div class="stat-card accent-rose">
+          <span class="stat-label">On leave today</span>
+          <span class="stat-value" id="statOnLeave">0</span>
+          <span class="stat-foot">approved &amp; active</span>
+        </div>
+      </div>
+
+      <div class="dash-lower">
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Today's attendance ring</h2>
+            <span class="panel-note">Present · Late · Absent · On leave</span>
+          </div>
+          <div class="ring-wrap">
+            <svg viewBox="0 0 120 120" class="ring" id="attendanceRing"></svg>
+            <ul class="ring-legend" id="ringLegend"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <h2>Recent activity</h2>
+          </div>
+          <ul class="activity-feed" id="activityFeed"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMPLOYEES -->
+    <section class="view" id="view-employees">
+      <header class="view-head">
+        <div>
+          <h1>Employees</h1>
+          <p class="sub">Everyone currently on the roster.</p>
+        </div>
+        <button class="btn-primary" id="btnAddEmployee">+ Add employee</button>
+      </header>
+
+      <div class="toolbar">
+        <input type="text" id="searchEmployee" placeholder="Search by name or role…">
+        <select id="filterDept">
+          <option value="">All departments</option>
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Employee</th><th>Role</th><th>Department</th><th>Status</th><th>Joined</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="employeeTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ATTENDANCE -->
+    <section class="view" id="view-attendance">
+      <header class="view-head">
+        <div>
+          <h1>Attendance</h1>
+          <p class="sub">Mark today's status for each employee.</p>
+        </div>
+        <span class="date-chip" id="attendanceDateChip"></span>
+      </header>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Employee</th><th>Department</th><th>Status</th><th>Check-in</th></tr>
+          </thead>
+          <tbody id="attendanceTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- LEAVE -->
+    <section class="view" id="view-leave">
+      <header class="view-head">
+        <div>
+          <h1>Leave requests</h1>
+          <p class="sub">Review and decide on time-off requests.</p>
+        </div>
+        <button class="btn-primary" id="btnAddLeave">+ New request</button>
+      </header>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Employee</th><th>Type</th><th>Dates</th><th>Reason</th><th>Status</th><th></th></tr>
+          </thead>
+          <tbody id="leaveTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modalBackdrop">
+  <div class="modal" id="modal"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="app.js"></script>
+</body>
+</html>
